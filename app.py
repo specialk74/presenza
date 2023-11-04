@@ -26,21 +26,38 @@ def index():
 
     return render_template('index.html', presenze=presenze)
 
-@app.route('/<int:idx>/update', methods=('POST',))
-def update(idx):
+@app.route('/update', methods=('POST',))
+def update():
     connection = connect()
     data = request.get_json()
+    value = data['data']['value']
+    oldValue = 0
+    presenze = connection.execute('SELECT * FROM presenza ORDER BY id').fetchall()
+    action = "";
     
-    pranzo = data['data']['pranzo']
-    cena = data['data']['cena']
-    dormire = data['data']['dormire']
+    if ('pranzo' in value):
+        update_str = 'UPDATE presenza SET pranzo=?, lastupdate WHERE id=?'
+        value = value[len('pranzo'):]
+        action = 'pranzo'
+    elif ('cena' in value):
+        update_str = 'UPDATE presenza SET cena=?, lastupdate WHERE id=?'
+        value = value[len('cena'):]
+        action = 'cena'
+    elif ('dormire' in value):
+        update_str = 'UPDATE presenza SET dormire=?, lastupdate WHERE id=?'
+        value = value[len('dormire'):]
+        action = 'dormire'
 
-    values = connection.execute('SELECT * FROM presenza WHERE id=?', (idx,)).fetchall()
+    giorno = value[1]
+    id = value[3]
+    oldValue= presenze[int(id)][action]
+    
+    print(giorno)
 
-    connection.execute('UPDATE presenza SET pranzo=?, cena=?, dormire=?, lastupdate WHERE id=?', (pranzo, cena, dormire, datetime(), idx))
-    connection.commit()    
+    #connection.execute('UPDATE presenza SET pranzo=?, cena=?, dormire=?, lastupdate WHERE id=?', (pranzo, cena, dormire, datetime(), idx))
+    #connection.commit()    
 
-    connection.close()
+    #connection.close()
 
     return redirect('/presenza')
  

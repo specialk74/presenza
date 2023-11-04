@@ -27,9 +27,7 @@
             .tg .tg-fine{border-color:black;border-style:solid;border-width:1px;background-color:black}
             .tg .tg-value{text-align:center;vertical-align:center}
             .tg .tg-name{text-align:center;vertical-align:center}
-            tr:nth-child(odd) {
-                background-color: #D6EEEE;
-            }
+            tr:nth-child(odd) { background-color: #D6EEEE; }
         </style>
 
     <link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
@@ -67,59 +65,108 @@
           var weekOfDay = [6,0,1,2,3,4,5];
           var giornoDellaSettimana = 1 << weekOfDay[d.getDay()];
           var date = new Date();
-            
-          {% for item in presenze %}
-            if ({{item.pranzo}} & giornoDellaSettimana != 0) {
+        
+          my_database[0].pranzo = 1;
+          my_database[0].cena = 2;
+          my_database[0].dormire = 4;
+
+          my_database[1].pranzo = 8;
+          my_database[1].cena = 16;
+          my_database[1].dormire = 32;
+          
+          my_database[2].dormire = 3;
+          
+          for (let item2 in my_database) {
+             if ((my_database[item2].pranzo & giornoDellaSettimana) != 0) {
               pranzi++;
-              nomiPranzi += " {{item.name}} ";
-            }
-            else
-            {
-              document.getElementById('pranzo0_{{item.id}}').style.backgroundColor  = "red";
-              document.getElementById('pranzo0_{{item.id}}').style.color = "white";
+              nomiPranzi += my_database[item2].name + "  ";
             }
                     
-            if ({{item.cena}} & giornoDellaSettimana != 0) {
+            if ((my_database[item2].cena & giornoDellaSettimana) != 0) {
               cene++;
-              nomiCena += " {{item.name}} ";
+              nomiCena += my_database[item2].name + "  ";
             }
 
-            if ({{item.dormire}} & giornoDellaSettimana != 0) {
+            if ((my_database[item2].dormire & giornoDellaSettimana) != 0) {
               dormire++;
-              nomiDormire += " {{item.name}} ";
+              nomiDormire += my_database[item2].name + "  ";
             }
             
             var color;
             var dayofweek;
-            for (let i = 0; i < 7; i++) {
-                date.setDate(date.getDate() + i);
+            for (let i = 0; i < weekOfDay.length; i++) {
+                date.setDate(d.getDate() + i);
                 dayofweek = 1 << weekOfDay[date.getDay()];
+                /*
+                if(item2 == 0) {
+                    console.log("date " + date);
+                    console.log("dayofweek " + dayofweek);
+                    console.log("my_database[" + item2 + "].pranzo " + my_database[item2].pranzo);
+                    console.log("my_database[" + item2 + "].pranzo & dayofweek " + (my_database[item2].pranzo & dayofweek));
+                }
+                */
+            
                 color  = "red";
-                if ({{item.pranzo}} & dayofweek != 0) {
+                if (my_database[item2].pranzo & dayofweek) {
                     color = "green";
                 }
 
-                document.getElementById("pranzo" + i + "_{{item.id}}").style.backgroundColor  = color;
-                document.getElementById("pranzo" + i + "_{{item.id}}").style.color = "white";
+                document.getElementById("pranzo-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
+                document.getElementById("pranzo-" + i + "-" + my_database[item2].id).style.color = "white";
 
                 color  = "red";
-                if ({{item.cena}} & dayofweek != 0) {
+                if (my_database[item2].cena & dayofweek) {
                     color  = "green";
                 }
 
-                document.getElementById("cena" + i + "_{{item.id}}").style.backgroundColor = color;
-                document.getElementById("cena" + i + "_{{item.id}}").style.color = "white";
+                document.getElementById("cena-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
+                document.getElementById("cena-" + i + "-" + my_database[item2].id).style.color = "white";
 
                 color  = "red";
-                if ({{item.dormire}} & dayofweek != 0) {
+                if ((my_database[item2].dormire & dayofweek) != 0) {
                     color  = "green";
                 }
 
-                document.getElementById("dormire" + i + "_{{item.id}}").style.backgroundColor  = color;
-                document.getElementById("dormire" + i + "_{{item.id}}").style.color = "white";
-            }
-          {% endfor %}
+                document.getElementById("dormire-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
+                document.getElementById("dormire-" + i + "-" + my_database[item2].id).style.color = "white";
+            }    
+          }
           
+          const buttons = document.getElementsByTagName("button");
+
+          const buttonPressed = e => {
+            console.log(e.target.id);  // Get ID of Clicked Element
+            const url = "/update";
+            const data = {
+                'value' : e.target.id
+            };
+
+            const other_params = {
+                headers : { "content-type" : "application/json; charset=UTF-8" },
+                body: JSON.stringify({data}),
+                method : "POST",
+                mode : "cors"
+            };
+
+            fetch(url, other_params)
+                .then(function(response) {
+                    if(response.redirected == true) {
+                        window.location.reload();
+                    }
+                })
+                .then(function(data) {
+                    console.log("update data")
+                    console.log(data)
+                })
+                .catch(function(error) {
+                    console.log("update error")
+                });
+          }
+
+          for (let button of buttons) {
+            button.addEventListener("click", buttonPressed);
+          }
+
 
           document.getElementById('pranzoAll').innerHTML = "Pranzo (" + pranzi + "): " + nomiPranzi;
           document.getElementById('cenaAll').innerHTML = "Cena (" + cene + "): " + nomiCena;
@@ -140,10 +187,6 @@
             var date = new Date();
             date.setDate(date.getDate() + days);
             return (("0" + date.getDate()).slice(-2) + "<br>" + dayName[date.getDay()]);
-        }
-        
-        function update(id) {
-            console.log(id);
         }
     </script>
     {% endblock %}
@@ -178,37 +221,37 @@
         <td class="tg-object" colspan="7"></td>
       </tr>
       <tr>
-        <td class="tg-value"><button id="pranzo0_{{product.id}}" onclick="update('pranzo0_{{product.id}}')">P</button></td>
-        <td class="tg-value"><button id="pranzo1_{{product.id}}">P</button></td>
-        <td class="tg-value"><button id="pranzo2_{{product.id}}">P</button></td>
-        <td class="tg-value"><button id="pranzo3_{{product.id}}">P</button></td>
-        <td class="tg-value"><button id="pranzo4_{{product.id}}">P</button></td>
-        <td class="tg-value"><button id="pranzo5_{{product.id}}">P</button></td>
-        <td class="tg-value"><button id="pranzo6_{{product.id}}">P</button></td>
+        <td class="tg-value"><button id="pranzo-0-{{product.id}}">P</button></td>
+        <td class="tg-value"><button id="pranzo-1-{{product.id}}">P</button></td>
+        <td class="tg-value"><button id="pranzo-2-{{product.id}}">P</button></td>
+        <td class="tg-value"><button id="pranzo-3-{{product.id}}">P</button></td>
+        <td class="tg-value"><button id="pranzo-4-{{product.id}}">P</button></td>
+        <td class="tg-value"><button id="pranzo-5-{{product.id}}">P</button></td>
+        <td class="tg-value"><button id="pranzo-6-{{product.id}}">P</button></td>
     </tr>
     <tr>
         <td class="tg-object" colspan="7"></td>
     </tr>
     <tr>
-        <td class="tg-value"><button id="cena0_{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena1_{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena2_{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena3_{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena4_{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena5_{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena6_{{product.id}}">C</button></td>
+        <td class="tg-value"><button id="cena-0-{{product.id}}">C</button></td>
+        <td class="tg-value"><button id="cena-1-{{product.id}}">C</button></td>
+        <td class="tg-value"><button id="cena-2-{{product.id}}">C</button></td>
+        <td class="tg-value"><button id="cena-3-{{product.id}}">C</button></td>
+        <td class="tg-value"><button id="cena-4-{{product.id}}">C</button></td>
+        <td class="tg-value"><button id="cena-5-{{product.id}}">C</button></td>
+        <td class="tg-value"><button id="cena-6-{{product.id}}">C</button></td>
     </tr>
     <tr>
         <td class="tg-object" colspan="7"></td>
     </tr>
     <tr>
-        <td class="tg-value"><button id="dormire0_{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire1_{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire2_{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire3_{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire4_{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire5_{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire6_{{product.id}}">D</button></td>
+        <td class="tg-value"><button id="dormire-0-{{product.id}}">D</button></td>
+        <td class="tg-value"><button id="dormire-1-{{product.id}}">D</button></td>
+        <td class="tg-value"><button id="dormire-2-{{product.id}}">D</button></td>
+        <td class="tg-value"><button id="dormire-3-{{product.id}}">D</button></td>
+        <td class="tg-value"><button id="dormire-4-{{product.id}}">D</button></td>
+        <td class="tg-value"><button id="dormire-5-{{product.id}}">D</button></td>
+        <td class="tg-value"><button id="dormire-6-{{product.id}}">D</button></td>
     </tr>
     <tr>
         <td class="tg-fine" colspan="8"></td>
