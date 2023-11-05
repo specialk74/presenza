@@ -6,9 +6,9 @@ CREATE TABLE presenza (
 	pranzo INTEGER NOT NULL,
 	cena INTEGER NOT NULL,
 	dormire INTEGER NOT NULL,
-	pranzoDefault BOOLEAN NOT NULL,
-	cenaDefault BOOLEAN NOT NULL,
-	dormireDefault BOOLEAN NOT NULL,
+	pranzoDefault INTEGER NOT NULL,
+	cenaDefault INTEGER NOT NULL,
+	dormireDefault INTEGER NOT NULL,
 	lastupdate DATE NOT NULL
 );
 

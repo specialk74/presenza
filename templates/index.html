@@ -62,7 +62,7 @@
           var dormire = 0;
           var nomiDormire = [];
           const d = new Date();
-                  
+          
           for (let item2 in my_database) {
              if (my_database[item2].pranzo & 1) {
               pranzi++;
@@ -97,24 +97,43 @@
                     color = "green";
                 }
 
-                document.getElementById("pranzo-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
-                document.getElementById("pranzo-" + i + "-" + my_database[item2].id).style.color = "white";
+                
+                if(i == 0 && d.getHours() >= 12) {
+                    document.getElementById("pranzo-" + i + "-" + my_database[item2].id).disabled = true;
+                }
+                else
+                {
+                    document.getElementById("pranzo-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
+                    document.getElementById("pranzo-" + i + "-" + my_database[item2].id).style.color = "white";
+                }
 
                 color  = "red";
                 if (my_database[item2].cena & dayofweek) {
                     color  = "green";
                 }
 
-                document.getElementById("cena-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
-                document.getElementById("cena-" + i + "-" + my_database[item2].id).style.color = "white";
+                if(i == 0 && ((d.getHours() >= 18 && d.getMinutes() >= 30) || d.getHours() > 18)) {
+                    document.getElementById("cena-" + i + "-" + my_database[item2].id).disabled = true;
+                }
+                else
+                {
+                    document.getElementById("cena-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
+                    document.getElementById("cena-" + i + "-" + my_database[item2].id).style.color = "white";
+                }
 
                 color  = "red";
                 if (my_database[item2].dormire & dayofweek) {
                     color  = "green";
                 }
 
-                document.getElementById("dormire-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
-                document.getElementById("dormire-" + i + "-" + my_database[item2].id).style.color = "white";
+                if(i == 0 && ((d.getHours() >= 21 && d.getMinutes() >= 30) || d.getHours() > 21)) {
+                    document.getElementById("dormire-" + i + "-" + my_database[item2].id).disabled = true;
+                }
+                else
+                {                    
+                    document.getElementById("dormire-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
+                    document.getElementById("dormire-" + i + "-" + my_database[item2].id).style.color = "white";
+                }
             }    
           }
           
@@ -153,6 +172,14 @@
             button.addEventListener("click", buttonPressed);
           }
 
+          if (pranzi == my_database.length)
+            nomiPranzi = "Tutti";
+            
+          if (cene == my_database.length)
+            nomiCena = "Tutti";
+
+          if (dormire == my_database.length)
+            nomiDormire = "Tutti";
 
           document.getElementById('pranzoAll').innerHTML = "Pranzo (" + pranzi + "): " + nomiPranzi;
           document.getElementById('cenaAll').innerHTML = "Cena (" + cene + "): " + nomiCena;
