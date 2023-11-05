@@ -32,32 +32,28 @@ def update():
     data = request.get_json()
     value = data['data']['value']
     oldValue = 0
-    presenze = connection.execute('SELECT * FROM presenza ORDER BY id').fetchall()
     action = "";
     
     if ('pranzo' in value):
-        update_str = 'UPDATE presenza SET pranzo=?, lastupdate WHERE id=?'
-        value = value[len('pranzo'):]
         action = 'pranzo'
     elif ('cena' in value):
-        update_str = 'UPDATE presenza SET cena=?, lastupdate WHERE id=?'
-        value = value[len('cena'):]
         action = 'cena'
     elif ('dormire' in value):
-        update_str = 'UPDATE presenza SET dormire=?, lastupdate WHERE id=?'
-        value = value[len('dormire'):]
         action = 'dormire'
 
-    giorno = value[1]
-    id = value[3]
-    oldValue= presenze[int(id)][action]
+    value = value[len(action):]
+    giorno = int(value[1])
+    idx = int(value[3])
     
-    print(giorno)
+    presenze = connection.execute('SELECT * FROM presenza WHERE id='+str(idx)).fetchall()
+    oldValue = presenze[0][action]
+    newValue = oldValue ^ (1 << giorno)
+    update_str = 'UPDATE presenza SET '+action+'=? WHERE id=?'
+    
+    connection.execute(update_str, (newValue, idx))
+    connection.commit()    
 
-    #connection.execute('UPDATE presenza SET pranzo=?, cena=?, dormire=?, lastupdate WHERE id=?', (pranzo, cena, dormire, datetime(), idx))
-    #connection.commit()    
-
-    #connection.close()
+    connection.close()
 
     return redirect('/presenza')
  
