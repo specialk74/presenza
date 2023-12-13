@@ -19,12 +19,16 @@ def connect():
 @app.route('/presenza')
 def index():
     connection = connect()
-
     presenze = connection.execute('SELECT * FROM presenza ORDER BY id').fetchall()
-        
     connection.close()
-
     return render_template('index.html', presenze=presenze)
+
+@app.route('/aggiorna')
+def aggiorna():
+    connection = connect()
+    presenze = connection.execute('SELECT * FROM presenza ORDER BY id').fetchall()
+    connection.close()
+    return json.jsonify(presenze=presenze)
 
 @app.route('/update', methods=('POST',))
 def update():
@@ -52,8 +56,14 @@ def update():
     
     connection.execute(update_str, (newValue, idx))
     connection.commit()    
+    
+    data = connection.execute('SELECT * FROM presenza ORDER BY id').fetchall()
+    print(data)
 
     connection.close()
+    presenze = dict(result=[dict(r) for r in data])
+    print(presenze)
+    #return json.jsonify(presenze=presenze)
 
     return redirect('/presenza')
  

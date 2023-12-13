@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime
 
-connection = sqlite3.connect('database.db')
+connection = sqlite3.connect('/home/pi/Presenza/database.db')
 connection.row_factory = sqlite3.Row
 
 rows = connection.execute('SELECT * FROM presenza ORDER BY id').fetchall()
