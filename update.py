@@ -7,8 +7,6 @@ connection.row_factory = sqlite3.Row
 rows = connection.execute('SELECT * FROM presenza ORDER BY id').fetchall()
 
 for row in rows:
- print(row['cenaDefault'])
-
  d = datetime.now()
  
  if (d.weekday() == 0):

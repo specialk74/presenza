@@ -13,9 +13,9 @@
         .button1 {
         background-image: url("{{url_for('static', filename='Accept-icon.png')}}");
             background-size: cover;
-            width: 20px;
-            height: 20px;
-            font-size: 2rem;
+            width: 16px;
+            height: 16px;
+            font-size: 1.5rem;
         }     
     </style>
     
@@ -24,7 +24,7 @@
             .tg td{border-color:black;border-style:solid;border-width:0px;}
             .tg .tg-date{text-align:center;vertical-align:center}
             .tg .tg-object{border-spacing:20px;}
-            .tg .tg-fine{border-color:black;border-style:solid;border-width:1px;background-color:black}
+            .tg .tg-fine{border-color:black;border-style:solid;border-width:0px;background-color:black}
             .tg .tg-value{text-align:center;vertical-align:center}
             .tg .tg-name{text-align:center;vertical-align:center}
             tr:nth-child(odd) { background-color: #D6EEEE; }
@@ -186,9 +186,21 @@
           if (dormire == my_database.length)
             nomiDormire = "Tutti";
 
-          document.getElementById('pranzoAll').innerHTML = "Pranzo (" + pranzi + "): " + nomiPranzi;
-          document.getElementById('cenaAll').innerHTML = "Cena (" + cene + "): " + nomiCena;
-          document.getElementById('dormireAll').innerHTML = "Dormire (" + dormire + "): " + nomiDormire;
+          if(d.getHours() < 15) {
+            document.getElementById('pranzoAll').innerHTML = "Pranzo (" + pranzi + "): " + nomiPranzi;
+            document.getElementById('cenaAll').style.visibility = "hidden";
+            document.getElementById('dormireAll').style.visibility = "hidden";
+          }
+          else if (d.getHours() < 21) {
+            document.getElementById('pranzoAll').style.visibility = "hidden";
+            document.getElementById('cenaAll').innerHTML = "Cena (" + cene + "): " + nomiCena;
+            document.getElementById('dormireAll').style.visibility = "hidden";
+          }
+          else {
+            document.getElementById('pranzoAll').style.visibility = "hidden";
+            document.getElementById('cenaAll').style.visibility = "hidden";
+            document.getElementById('dormireAll').innerHTML = "Dormire (" + dormire + "): " + nomiDormire;
+          }
 
           document.getElementById('today0').innerHTML = d.addDays(0);
           document.getElementById('today1').innerHTML = d.addDays(1);
@@ -235,7 +247,7 @@
               </tr>
     {% for product in presenze %}
       <tr>
-        <td class="tg-name" rowspan="6">{{product.name}}</td>
+        <td class="tg-name" rowspan="8">{{product.name}}</td>
         <td class="tg-object" colspan="7"></td>
       </tr>
       <tr>
@@ -272,7 +284,19 @@
         <td class="tg-value"><button id="dormire-6-{{product.id}}">D</button></td>
     </tr>
     <tr>
-        <td class="tg-fine" colspan="8"></td>
+        <td class="tg-object" colspan="7"></td>
+    </tr>
+    <tr>
+        <td class="tg-value"><button id="macchina-0-{{product.id}}">M</button></td>
+        <td class="tg-value"><button id="macchina-1-{{product.id}}">M</button></td>
+        <td class="tg-value"><button id="macchina-2-{{product.id}}">M</button></td>
+        <td class="tg-value"><button id="macchina-3-{{product.id}}">M</button></td>
+        <td class="tg-value"><button id="macchina-4-{{product.id}}">M</button></td>
+        <td class="tg-value"><button id="macchina-5-{{product.id}}">M</button></td>
+        <td class="tg-value"><button id="macchina-6-{{product.id}}">M</button></td>
+    </tr>
+    <tr>
+        <td class="tg-fine" colspan="9"></td>
     </tr>
     {% endfor %}
             </tbody>
