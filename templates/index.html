@@ -9,24 +9,17 @@
 
     <head>
         {% block head %}
-    <style>
-        .button1 {
-        background-image: url("{{url_for('static', filename='Accept-icon.png')}}");
-            background-size: cover;
-            width: 16px;
-            height: 16px;
-            font-size: 1.5rem;
-        }     
-    </style>
+    
     
         <style type="text/css">
             .tg  {border-collapse:collapse;border-spacing:0;}
             .tg td{border-color:black;border-style:solid;border-width:0px;}
             .tg .tg-date{text-align:center;vertical-align:center}
-            .tg .tg-object{border-spacing:20px;}
+            .tg .tg-object{border-spacing:0px;}
             .tg .tg-fine{border-color:black;border-style:solid;border-width:0px;background-color:black}
             .tg .tg-value{text-align:center;vertical-align:center}
             .tg .tg-name{text-align:center;vertical-align:center}
+            .mybutton {font-size:0.8em;border-radius: 8px;}
             tr:nth-child(odd) { background-color: #D6EEEE; }
         </style>
 
@@ -43,6 +36,8 @@
                 pranzo: "{{item.pranzo}}", 
                 cena: "{{item.cena}}", 
                 dormire: "{{item.dormire}}", 
+                macchina: "{{item.macchina}}", 
+                patente: "{{item.patente}}", 
                 pranzoDef: "{{item.pranzoDefault}}", 
                 cenaDef: "{{item.cenaDefault}}", 
                 dormireDef: "{{item.dormireDefault}}", 
@@ -101,6 +96,8 @@
           var nomiCena = [];
           var dormire = 0;
           var nomiDormire = [];
+          var macchina = 0;
+          var nomiMacchina = [];
           const d = new Date();
           
           for (let item2 in my_database) {
@@ -119,6 +116,11 @@
               nomiDormire += my_database[item2].name + "  ";
             }
             
+            if (my_database[item2].macchina & 1) {
+              macchina++;
+              nomiMacchina += my_database[item2].name + "  ";
+            }
+
             var color;
             var dayofweek;
             for (let i = 0; i < 7; i++) {
@@ -131,6 +133,8 @@
                     console.log("my_database[" + item2 + "].pranzo & dayofweek " + (my_database[item2].pranzo & dayofweek));
                 }
                 */
+                
+                // PRANZO
             
                 color  = "red";
                 if (my_database[item2].pranzo & dayofweek) {
@@ -146,6 +150,8 @@
                     document.getElementById("pranzo-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
                     document.getElementById("pranzo-" + i + "-" + my_database[item2].id).style.color = "white";
                 }
+                
+                // CENA
 
                 color  = "red";
                 if (my_database[item2].cena & dayofweek) {
@@ -160,6 +166,8 @@
                     document.getElementById("cena-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
                     document.getElementById("cena-" + i + "-" + my_database[item2].id).style.color = "white";
                 }
+                
+                // DORMIRE
 
                 color  = "red";
                 if (my_database[item2].dormire & dayofweek) {
@@ -173,6 +181,22 @@
                 {                    
                     document.getElementById("dormire-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
                     document.getElementById("dormire-" + i + "-" + my_database[item2].id).style.color = "white";
+                }
+                
+                // MACCHINA
+                
+                if(my_database[item2].patente == 1) {
+                    color  = "red";
+                    if (my_database[item2].macchina & dayofweek) {
+                        color  = "green";
+                    }
+
+                    document.getElementById("macchina-" + i + "-" + my_database[item2].id).style.backgroundColor  = color;
+                    document.getElementById("macchina-" + i + "-" + my_database[item2].id).style.color = "white";
+                }
+                else
+                {
+                    document.getElementById("macchina-" + i + "-" + my_database[item2].id).style.display  = "none";
                 }
             }    
           }
@@ -201,6 +225,8 @@
             document.getElementById('cenaAll').style.visibility = "hidden";
             document.getElementById('dormireAll').innerHTML = "Dormire (" + dormire + "): " + nomiDormire;
           }
+          
+          document.getElementById('macchinaAll').innerHTML = "Macchina (" + macchina + "): " + nomiMacchina;
 
           document.getElementById('today0').innerHTML = d.addDays(0);
           document.getElementById('today1').innerHTML = d.addDays(1);
@@ -226,13 +252,14 @@
     <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
         <a id="num_elements" class="navbar-brand" href="#">
-            PresenzaApp - v 1.0
+            PresenzaApp - v 2.0
         </a>
         </div>
     </nav>
         <div id="pranzoAll"></div>
         <div id="cenaAll"></div>
         <div id="dormireAll"></div>
+        <div id="macchinaAll"></div>
         <table class="tg" width="100%">
             <tbody>
               <tr>
@@ -251,49 +278,49 @@
         <td class="tg-object" colspan="7"></td>
       </tr>
       <tr>
-        <td class="tg-value"><button id="pranzo-0-{{product.id}}">P</button></td>
-        <td class="tg-value"><button id="pranzo-1-{{product.id}}">P</button></td>
-        <td class="tg-value"><button id="pranzo-2-{{product.id}}">P</button></td>
-        <td class="tg-value"><button id="pranzo-3-{{product.id}}">P</button></td>
-        <td class="tg-value"><button id="pranzo-4-{{product.id}}">P</button></td>
-        <td class="tg-value"><button id="pranzo-5-{{product.id}}">P</button></td>
-        <td class="tg-value"><button id="pranzo-6-{{product.id}}">P</button></td>
+        <td class="tg-value"><button class="mybutton" id="pranzo-0-{{product.id}}">P</button></td>
+        <td class="tg-value"><button class="mybutton" id="pranzo-1-{{product.id}}">P</button></td>
+        <td class="tg-value"><button class="mybutton" id="pranzo-2-{{product.id}}">P</button></td>
+        <td class="tg-value"><button class="mybutton" id="pranzo-3-{{product.id}}">P</button></td>
+        <td class="tg-value"><button class="mybutton" id="pranzo-4-{{product.id}}">P</button></td>
+        <td class="tg-value"><button class="mybutton" id="pranzo-5-{{product.id}}">P</button></td>
+        <td class="tg-value"><button class="mybutton" id="pranzo-6-{{product.id}}">P</button></td>
     </tr>
     <tr>
         <td class="tg-object" colspan="7"></td>
     </tr>
     <tr>
-        <td class="tg-value"><button id="cena-0-{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena-1-{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena-2-{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena-3-{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena-4-{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena-5-{{product.id}}">C</button></td>
-        <td class="tg-value"><button id="cena-6-{{product.id}}">C</button></td>
+        <td class="tg-value"><button class="mybutton" id="cena-0-{{product.id}}">C</button></td>
+        <td class="tg-value"><button class="mybutton" id="cena-1-{{product.id}}">C</button></td>
+        <td class="tg-value"><button class="mybutton" id="cena-2-{{product.id}}">C</button></td>
+        <td class="tg-value"><button class="mybutton" id="cena-3-{{product.id}}">C</button></td>
+        <td class="tg-value"><button class="mybutton" id="cena-4-{{product.id}}">C</button></td>
+        <td class="tg-value"><button class="mybutton" id="cena-5-{{product.id}}">C</button></td>
+        <td class="tg-value"><button class="mybutton" id="cena-6-{{product.id}}">C</button></td>
     </tr>
     <tr>
         <td class="tg-object" colspan="7"></td>
     </tr>
     <tr>
-        <td class="tg-value"><button id="dormire-0-{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire-1-{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire-2-{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire-3-{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire-4-{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire-5-{{product.id}}">D</button></td>
-        <td class="tg-value"><button id="dormire-6-{{product.id}}">D</button></td>
+        <td class="tg-value"><button class="mybutton" id="dormire-0-{{product.id}}">D</button></td>
+        <td class="tg-value"><button class="mybutton" id="dormire-1-{{product.id}}">D</button></td>
+        <td class="tg-value"><button class="mybutton" id="dormire-2-{{product.id}}">D</button></td>
+        <td class="tg-value"><button class="mybutton" id="dormire-3-{{product.id}}">D</button></td>
+        <td class="tg-value"><button class="mybutton" id="dormire-4-{{product.id}}">D</button></td>
+        <td class="tg-value"><button class="mybutton" id="dormire-5-{{product.id}}">D</button></td>
+        <td class="tg-value"><button class="mybutton" id="dormire-6-{{product.id}}">D</button></td>
     </tr>
     <tr>
         <td class="tg-object" colspan="7"></td>
     </tr>
     <tr>
-        <td class="tg-value"><button id="macchina-0-{{product.id}}">M</button></td>
-        <td class="tg-value"><button id="macchina-1-{{product.id}}">M</button></td>
-        <td class="tg-value"><button id="macchina-2-{{product.id}}">M</button></td>
-        <td class="tg-value"><button id="macchina-3-{{product.id}}">M</button></td>
-        <td class="tg-value"><button id="macchina-4-{{product.id}}">M</button></td>
-        <td class="tg-value"><button id="macchina-5-{{product.id}}">M</button></td>
-        <td class="tg-value"><button id="macchina-6-{{product.id}}">M</button></td>
+        <td class="tg-value"><button class="mybutton" id="macchina-0-{{product.id}}">M</button></td>
+        <td class="tg-value"><button class="mybutton" id="macchina-1-{{product.id}}">M</button></td>
+        <td class="tg-value"><button class="mybutton" id="macchina-2-{{product.id}}">M</button></td>
+        <td class="tg-value"><button class="mybutton" id="macchina-3-{{product.id}}">M</button></td>
+        <td class="tg-value"><button class="mybutton" id="macchina-4-{{product.id}}">M</button></td>
+        <td class="tg-value"><button class="mybutton" id="macchina-5-{{product.id}}">M</button></td>
+        <td class="tg-value"><button class="mybutton" id="macchina-6-{{product.id}}">M</button></td>
     </tr>
     <tr>
         <td class="tg-fine" colspan="9"></td>

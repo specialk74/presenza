@@ -44,6 +44,8 @@ def update():
         action = 'cena'
     elif ('dormire' in value):
         action = 'dormire'
+    elif ('macchina' in value):
+        action = 'macchina'
 
     value = value[len(action):]
     giorno = int(value[1])
@@ -51,6 +53,8 @@ def update():
     
     presenze = connection.execute('SELECT * FROM presenza WHERE id='+str(idx)).fetchall()
     oldValue = presenze[0][action]
+    if (oldValue == None):
+        oldValue = 0
     newValue = oldValue ^ (1 << giorno)
     update_str = 'UPDATE presenza SET '+action+'=? WHERE id=?'
     
@@ -58,11 +62,11 @@ def update():
     connection.commit()    
     
     data = connection.execute('SELECT * FROM presenza ORDER BY id').fetchall()
-    print(data)
+    #print(data)
 
     connection.close()
     presenze = dict(result=[dict(r) for r in data])
-    print(presenze)
+    #print(presenze)
     #return json.jsonify(presenze=presenze)
 
     return redirect('/presenza')
