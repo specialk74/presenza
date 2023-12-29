@@ -37,15 +37,16 @@ if (esci == True):
 
 TOKEN = config['DEFAULT']['TELEGRAM_TOKEN']
 CHAT_ID = config['DEFAULT']['TELEGRAM_CHAT_ID']
+HTTP = config['DEFAULT']['HTTP']
 
 message = None
 
 if (args.message == '1'):
-	message = "Manca un'ora alla chiusura per prenotarsi il pranzo..."
+    message = "Manca un'ora alla chiusura per prenotarsi il pranzo... -> " + HTTP
 elif (args.message == '2'):
-	message = "Manca un'ora alla chiusura per prenotarsi la cena..."
+    message = "Manca un'ora alla chiusura per prenotarsi la cena... -> " + HTTP
 elif (args.message == '3'):
-	message = "Manca un'ora alla prenotazione prima di rimanere chiusi fuori..."
+    message = "Manca un'ora alla prenotazione prima di rimanere chiusi fuori... -> " + HTTP
 
 if (TOKEN == None):
 	print("ELEGRAM_TOKEN None")
