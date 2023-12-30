@@ -4,6 +4,9 @@ from argparse import ArgumentParser
 import sqlite3
 from datetime import datetime
 import configparser
+import os
+
+last_message_filename = "/home/pi/Presenza/last_message.txt"
 
 connection = sqlite3.connect('/home/pi/Presenza/database.db')
 connection.row_factory = sqlite3.Row
@@ -58,5 +61,18 @@ if (message == None):
 	print("message None")
 	exit()
 	
+if os.path.exists(last_message_filename):
+	with open(last_message_filename,"r") as f:
+		last_message = f.readline()
+		f.close()
+		url = "https://api.telegram.org/bot{}/deleteMessage?chat_id={}&message_id={}".format(TOKEN,CHAT_ID,last_message)
+		response = requests.get(url).json()
+		print(response) # this sends the message
+
 url = "https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}".format(TOKEN,CHAT_ID,message)
-print(requests.get(url).json()) # this sends the message
+response = requests.get(url).json()
+with open(last_message_filename,"w") as f:
+	f.write("{}".format(response['result']['message_id']))
+	f.close()
+#print(response['result']['message_id'])
+print(response) # this sends the message
